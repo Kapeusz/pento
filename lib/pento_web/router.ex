@@ -28,6 +28,11 @@ defmodule PentoWeb.Router do
     live("/guess", WrongLive)
   end
 
+  scope "/route", PentoWeb do
+    pipe_through([:browser, :require_authenticated_user])
+    get("/", Redirect, to: "/guess")
+  end
+
   scope "/", PentoWeb do
     pipe_through(:browser)
     live("/", PageLive, :index)
