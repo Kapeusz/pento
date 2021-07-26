@@ -4,10 +4,10 @@ defmodule Pento.Accounts.User do
 
   @derive {Inspect, except: [:password]}
   schema "users" do
-    field :email, :string
-    field :password, :string, virtual: true
-    field :hashed_password, :string
-    field :confirmed_at, :naive_datetime
+    field(:email, :string)
+    field(:password, :string, virtual: true)
+    field(:hashed_password, :string)
+    field(:confirmed_at, :naive_datetime)
 
     timestamps()
   end
@@ -32,6 +32,7 @@ defmodule Pento.Accounts.User do
   def registration_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:email, :password])
+    |> validate_confirmation(:password, message: "does not match password")
     |> validate_email()
     |> validate_password(opts)
   end
@@ -136,4 +137,9 @@ defmodule Pento.Accounts.User do
       add_error(changeset, :current_password, "is not valid")
     end
   end
+
+  @doc """
+  Returns true if the user has confirmed their account, false otherwise
+  """
+  def is_confirmed?(user), do: user.confirmed_at != nil
 end

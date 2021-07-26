@@ -20,6 +20,11 @@ defmodule PentoWeb.Router do
   scope "/", PentoWeb do
     pipe_through([:browser, :require_authenticated_user])
 
+    get("/users/settings", UserSettingsController, :edit)
+    put("/users/settings/update_password", UserSettingsController, :update_password)
+    put("/users/settings/update_email", UserSettingsController, :update_email)
+    get("/users/settings/confirm_email/:token", UserSettingsController, :confirm_email)
+
     live("/guess", WrongLive)
   end
 
@@ -47,6 +52,11 @@ defmodule PentoWeb.Router do
       pipe_through(:browser)
       live_dashboard("/dashboard", metrics: PentoWeb.Telemetry)
     end
+  end
+
+  if Mix.env() == :dev do
+    # If using Phoenix
+    forward("/sent_emails", Bamboo.SentEmailViewerPlug)
   end
 
   ## Authentication routes
